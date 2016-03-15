@@ -32,6 +32,12 @@ struct ArrayDeleter {
 	}
 };
 
+typedef struct VoxelData {
+	int gridSize;
+	double voxelSize;
+	vector<vector<int>> *voxels;
+} VoxelData;
+
 class Voxelizer {
 
 	bool _isInit;
@@ -80,6 +86,7 @@ public:
 	int GetTotalSize();
 	v3_p GetHalfUnit();
 	auint_p GetVoxels();
+	VoxelData *GetVoxelData();
 	v3_p GetVoxel(const Vec3f& loc);
 	v3_p GetVoxel(const v3_p& loc);
 	v3_p GetLoc(const v3_p& voxel);

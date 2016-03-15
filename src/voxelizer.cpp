@@ -526,6 +526,47 @@ inline void Voxelizer::_RunSolidTask2(size_t numThread) {
 }
 
 
+VoxelData *Voxelizer::GetVoxelData() {
+	if (_verbose) cout << "gathering voxel data..." << endl;
+	int lx = (*_meshVoxLB)[0], ux = (*_meshVoxUB)[0], ly = (*_meshVoxLB)[1], uy = (*_meshVoxUB)[1], lz = (*_meshVoxLB)[2], uz = (*_meshVoxUB)[2];
+
+	VoxelData *data = new VoxelData();
+	data->gridSize = _size;
+	data->voxelSize = (*_halfUnit)[0] * 2;
+	data->voxels = new vector<vector<int>>();
+
+	if (_verbose) cout << "grid size : " << _size << endl;
+	if (_verbose) cout << "lower bound : " << (*_lb)[0] << " " << (*_lb)[1] << " " << (*_lb)[2] << endl;
+	if (_verbose) cout << "voxel size : " << (*_halfUnit)[0] * 2 << endl;
+	if (_verbose) cout << "voxel bound : (" << lx << " " << ly << " " << lz << "), " << " (" << ux << " " << uy << " " << uz << ")" << endl;
+
+	//
+	// write data
+	//
+	unsigned int voxelInt, tmp, count = 0;
+	for (int x = lx; x <= ux; ++x) {
+		for (int y = ly; y <= uy; ++y) {
+			for (int z = lz; z <= uz; ++z) {
+				voxelInt = x*_size2 + y*_size + z;
+				tmp = (_voxels.get())[voxelInt/BATCH_SIZE].load();
+				if (GETBIT(tmp, voxelInt)) {
+					vector<int> voxel(3);
+					voxel.at(0) = x;
+					voxel.at(1) = y;
+					voxel.at(2) = z;
+
+					data->voxels->push_back(voxel);
+					++count;
+				}
+			}
+		}
+	}
+
+	if (_verbose) cout << "gathered " << count << " voxels" << endl;
+
+	return data;
+}
+
 /**
  * Write to file, with simple compression
  */
