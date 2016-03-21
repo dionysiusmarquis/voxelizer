@@ -32,11 +32,6 @@ struct ArrayDeleter {
 	}
 };
 
-typedef struct VoxelData {
-	int gridSize;
-	double voxelSize;
-	vector<vector<int>> *voxels;
-} VoxelData;
 
 class Voxelizer {
 
@@ -83,6 +78,15 @@ class Voxelizer {
 	inline void _BfsSolid(const unsigned int voxelId);
 
 public:
+	typedef struct VoxelData {
+		int gridSize;
+		double voxelSize;
+		int maxBounds[3];
+		int minBounds[3];
+		vector<vector<int>> *voxels;
+		vector<vector<vector<int>*>*> *grid;
+	} VoxelData;
+
 	int GetTotalSize();
 	v3_p GetHalfUnit();
 	auint_p GetVoxels();

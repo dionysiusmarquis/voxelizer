@@ -526,14 +526,26 @@ inline void Voxelizer::_RunSolidTask2(size_t numThread) {
 }
 
 
-VoxelData *Voxelizer::GetVoxelData() {
+Voxelizer::VoxelData *Voxelizer::GetVoxelData() {
 	if (_verbose) cout << "gathering voxel data..." << endl;
 	int lx = (*_meshVoxLB)[0], ux = (*_meshVoxUB)[0], ly = (*_meshVoxLB)[1], uy = (*_meshVoxUB)[1], lz = (*_meshVoxLB)[2], uz = (*_meshVoxUB)[2];
 
-	VoxelData *data = new VoxelData();
+	Voxelizer::VoxelData *data = new VoxelData();
 	data->gridSize = _size;
 	data->voxelSize = (*_halfUnit)[0] * 2;
+
+	data->minBounds[0] = lx;
+	data->minBounds[1] = ly;
+	data->minBounds[2] = lz;
+
+	data->maxBounds[0] = ux;
+	data->maxBounds[1] = uy;
+	data->maxBounds[2] = uz;
+
 	data->voxels = new vector<vector<int>>();
+	data->grid = new vector<vector<vector<int>*>*>();
+
+	data->grid->resize(ux+1);
 
 	if (_verbose) cout << "grid size : " << _size << endl;
 	if (_verbose) cout << "lower bound : " << (*_lb)[0] << " " << (*_lb)[1] << " " << (*_lb)[2] << endl;
@@ -545,10 +557,22 @@ VoxelData *Voxelizer::GetVoxelData() {
 	//
 	unsigned int voxelInt, tmp, count = 0;
 	for (int x = lx; x <= ux; ++x) {
+
+		if(!data->grid->at(x))
+			data->grid->at(x) = new vector<vector<int>*>();
+		data->grid->at(x)->resize(uy+1);
+
 		for (int y = ly; y <= uy; ++y) {
+
+			if(!data->grid->at(x)->at(y))
+				data->grid->at(x)->at(y) = new vector<int>();
+			data->grid->at(x)->at(y)->resize(uz+1);
+
 			for (int z = lz; z <= uz; ++z) {
+
 				voxelInt = x*_size2 + y*_size + z;
 				tmp = (_voxels.get())[voxelInt/BATCH_SIZE].load();
+
 				if (GETBIT(tmp, voxelInt)) {
 					vector<int> voxel(3);
 					voxel.at(0) = x;
@@ -556,8 +580,10 @@ VoxelData *Voxelizer::GetVoxelData() {
 					voxel.at(2) = z;
 
 					data->voxels->push_back(voxel);
+					data->grid->at(x)->at(y)->at(z) = 1;
 					++count;
-				}
+				} else
+					data->grid->at(x)->at(y)->at(z) = 0;
 			}
 		}
 	}
