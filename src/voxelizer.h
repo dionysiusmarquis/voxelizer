@@ -81,8 +81,10 @@ public:
 	typedef struct VoxelData {
 		int gridSize;
 		double voxelSize;
-		int maxBounds[3];
-		int minBounds[3];
+		int voxelMinBounds[3];
+		int voxelMaxBounds[3];
+		double meshMinBounds[3];
+		double meshMaxBounds[3];
 		vector<vector<int>> *voxels;
 		vector<vector<vector<int>*>*> *grid;
 	} VoxelData;

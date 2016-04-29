@@ -534,13 +534,21 @@ Voxelizer::VoxelData *Voxelizer::GetVoxelData() {
 	data->gridSize = _size;
 	data->voxelSize = (*_halfUnit)[0] * 2;
 
-	data->minBounds[0] = lx;
-	data->minBounds[1] = ly;
-	data->minBounds[2] = lz;
+	data->voxelMinBounds[0] = lx;
+	data->voxelMinBounds[1] = ly;
+	data->voxelMinBounds[2] = lz;
 
-	data->maxBounds[0] = ux;
-	data->maxBounds[1] = uy;
-	data->maxBounds[2] = uz;
+	data->voxelMaxBounds[0] = ux;
+	data->voxelMaxBounds[1] = uy;
+	data->voxelMaxBounds[2] = uz;
+
+	data->meshMinBounds[0] = (*_meshLb)[0];
+	data->meshMinBounds[1] = (*_meshLb)[1];
+	data->meshMinBounds[2] = (*_meshLb)[2];
+
+	data->meshMaxBounds[0] = (*_meshUb)[0];
+	data->meshMaxBounds[1] = (*_meshUb)[1];
+	data->meshMaxBounds[2] = (*_meshUb)[2];
 
 	data->voxels = new vector<vector<int>>();
 	data->grid = new vector<vector<vector<int>*>*>();
